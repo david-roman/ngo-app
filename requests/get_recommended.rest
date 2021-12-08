@@ -1,1 +1,16 @@
-GET http://localhost:3001/recommended
+POST http://localhost:3001/recommended
+Content-Type: application/json
+
+{
+    "ngoNum": null,
+    "hq": null,
+    "scope": null,
+    "established": null,
+    "members": null,
+    "fundings": null,
+    "languages": null,
+    "description": null,
+    "continents": null,
+    "countries": null,
+    "activities": null
+}

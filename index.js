@@ -1,25 +1,31 @@
 const express = require('express');
 const { spawn } = require('child_process');
+const cors = require('cors');
 
 const app = express();
 
-let result = {
-    name: 'Sample NGO',
-    mail: 'example@gmail.com',
-    phone: '123456789',
-    address: 'C/Street 1, Barcelona, Spain',
-};
+app.use(cors());
+app.use(express.json());
 
-app.get('/recommended', (request, response) => {
-    const python = spawn('python', ['./python/recommender.py', JSON.stringify(result)]);
+app.post('/recommended', (request, response) => {
+    const requirements = request.body;
+    const returnVal = [];
+    const python = spawn('python', ['./python/Recommender.py', JSON.stringify(requirements)]);
     python.stdout.on('data', (data) => {
-        result = JSON.parse(data.toString().trim().replace(/'/g, '"'));
+        returnVal.push(JSON.parse(data.toString()
+            .replace(/{'/g, '{"')
+            .replace(/':/g, '":')
+            .replace(/: '/g, ': "')
+            .replace(/, '/g, ', "')
+            .replace(/', /g, '", ')
+            .replace(/'}/g, '"}')
+            .trim()));
     });
     // eslint-disable-next-line no-unused-vars
     python.on('close', (code) => {
-        response.json(result);
+        response.json(returnVal);
     });
 });
 
-const PORT = 3001;
+const PORT = 3002;
 app.listen(PORT);
