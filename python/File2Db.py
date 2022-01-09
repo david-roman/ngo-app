@@ -10,40 +10,10 @@ import re
 def has_info(item):
 
     if not item['title'] or (not item['remarks'] and not item['statement']) or not item['activities']:
-
         return False;
 
     else:
         return True;
-
-# Obtain and insert text fields from json
-def load_redisearch(json_arr):
-
-    r = Redis(port=6380)
-    r.flushall()
-
-    # FT.CREATE textIndex SCHEMA desc TEXT
-    client = SClient("textIndex", port=6380)
-    
-    client.create_index([TextField('desc')])
-
-    for elem in json_arr:
-
-        text = ""
-
-        if elem['statement'] is not None:
-            text = elem['statement']
-
-        remarks = elem['remarks']
-        exclude = ['status', 'Status', 'application', 'Application', 'submit', 'suspend']
-        if remarks is not None and (len(remarks) > 1000 or (len(remarks) > 200 and not any(e in remarks for e in exclude))):
-            
-            text += " " + remarks
-    
-        if text:
-
-            # FT.ADD textIndex name 1.0 FIELDS desc "text"
-            client.add_document(elem['title'], desc=text)
 
 #insert json
 def load_redisjson(json_arr):
@@ -55,10 +25,7 @@ def load_redisjson(json_arr):
 
     for elem in json_arr:
 
-        #Delete textual fields
-        elem.pop('statement', None)
-        elem.pop('remarks', None)
-
+        # Estimate members
         if elem['members'] is not None:
 
             if len(elem['members']) > 150:
@@ -73,7 +40,35 @@ def load_redisjson(json_arr):
                     if elem['members'] == 0: elem.pop('members', None)
                 
                 else: 
-                    elem.pop('members', None);
+                    elem.pop('members', None)
+
+        # Filter established
+        if elem['established'] == "0000":
+            elem.pop('established', None)
+        else:
+            elem['established'] = int(elem['established'])
+
+        # Text fields to one field
+        text = ""
+
+        if elem['statement'] is not None:
+            text = elem['statement']
+
+        remarks = elem['remarks']
+        exclude = ['status', 'Status', 'application', 'Application', 'submit', 'suspend']
+        if remarks is not None and (len(remarks) > 1000 or (len(remarks) > 200 \
+            and not any(e in remarks for e in exclude))):
+            
+            text += " " + remarks
+        
+        elem['text'] = text
+
+        #Delete old text fields
+        elem.pop('statement', None)
+        elem.pop('remarks', None)
+    
+        if elem['established']:
+            elem['established'] = int(elem['established'])
 
         # JSON.SET name . 'elem'
         client.jsonset(elem['title'], Path.rootPath(), elem)
@@ -90,7 +85,6 @@ def main():
 
     print(len(json_arr))
 
-    load_redisearch(json_arr)
     load_redisjson(json_arr)
 
 if __name__ == "__main__":

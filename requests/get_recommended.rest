@@ -1,4 +1,4 @@
-POST http://localhost:3001/recommended
+POST http://localhost:3002/recommended
 Content-Type: application/json
 
 {
@@ -9,7 +9,7 @@ Content-Type: application/json
     "members": null,
     "fundings": null,
     "languages": null,
-    "description": null,
+    "description": "hello",
     "continents": null,
     "countries": null,
     "activities": null
