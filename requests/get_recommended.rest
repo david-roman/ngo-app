@@ -7,7 +7,7 @@ Content-Type: application/json
     "scope": null,
     "established": null,
     "members": null,
-    "fundings": null,
+    "funding": null,
     "languages": null,
     "description": "hello",
     "continents": null,

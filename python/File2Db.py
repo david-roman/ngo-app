@@ -35,7 +35,6 @@ def load_redisjson(json_arr):
                 numbers = re.findall(r'[0-9]+[.,]?[0-9]*', elem['members'])
                 
                 if len(numbers) > 0:
-                    print
                     elem['members'] = sum(map(lambda num: int(num.replace(',', '').replace('.','')), numbers))
                     if elem['members'] == 0: elem.pop('members', None)
                 
@@ -45,8 +44,26 @@ def load_redisjson(json_arr):
         # Filter established
         if elem['established'] == "0000":
             elem.pop('established', None)
-        else:
+        elif elem['established'] and elem['established'].isnumeric():
             elem['established'] = int(elem['established'])
+
+        # Countries
+        # TODO: Most countries inserted as None
+
+        if elem['countries'] is not None and len(elem['countries']) > 0:
+            if elem['countries'][0].lower() == 'none':
+                elem.pop('countries', None)
+
+            else:
+                def setIsoName(country):
+                    if "Ivoire" in country:
+                        return "Ivory Coast"
+                    elif "Palestine" in country:
+                        return "Palestine, State of"
+                    elif "Korea" in country:
+                        return "South Korea"
+
+                elem['countries'] = [setIsoName(country) for country in elem['countries']]
 
         # Text fields to one field
         text = ""
@@ -67,9 +84,6 @@ def load_redisjson(json_arr):
         elem.pop('statement', None)
         elem.pop('remarks', None)
     
-        if elem['established']:
-            elem['established'] = int(elem['established'])
-
         # JSON.SET name . 'elem'
         client.jsonset(elem['title'], Path.rootPath(), elem)
 

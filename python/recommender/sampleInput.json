@@ -1,12 +1,16 @@
 {
-    "ngoNum": null, 
-    "hq": null, 
-    "scope": null, 
-    "established": null, 
-    "members": null, 
-    "fundings": null, 
-    "languages": null, 
-    "description": "Development of women in africa", 
-    "continents": null, 
-    "countries": null,
-    "activities": null}
+    "ngoNum": 10, 
+    "hq": ["France", "Spain"], 
+    "scope": ["International"], 
+    "established": [1950, 2000], 
+    "members": [10, 100], 
+    "funding": ["Membership fees or dues", "Funds from Religious Institutions", "Fundraising campaigns"], 
+    "languages": ["Spanish", "French", "Afrikaans", "Swahili"], 
+    "description": "Sustainable development of economy in Africa to enforce women and children rights", 
+    "continents": ["Africa"], 
+    "countries": ["Kenya", "Tanzania", "Ivory Coast"],
+    "activities": {
+        "Economic and Social": ["Business and Industry", "Culture", "Development"],
+        "Gender Issues and Advancement of Women": ["Advocacy and outreach", "Capacity building"]
+    }
+}
