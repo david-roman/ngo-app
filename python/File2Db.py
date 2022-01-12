@@ -55,15 +55,32 @@ def load_redisjson(json_arr):
                 elem.pop('countries', None)
 
             else:
+            
+                if "Holy See" in elem['countries']:
+                    elem['countries'].remove("Holy See")
+                if "Country Not Available" in elem['countries']:
+                    elem['countries'].remove("Country Not Available")
+                if "Timor-Leste" in elem['countries']:
+                    elem['countries'].remove("Timor-Leste")
+                if "-" in elem['countries']:
+                    elem['countries'].remove("-")
+
                 def setIsoName(country):
+                    problematic = ["Palestine", "Venezuela", "Iran", "Bolivia", "Micronesia"]
+
                     if "Ivoire" in country:
                         return "Ivory Coast"
-                    elif "Palestine" in country:
-                        return "Palestine, State of"
-                    elif "Korea" in country:
+                    if "Bissau" in country:
+                        return "Guinea-Bissau"
+                    if "Republic of Korea" in country:
                         return "South Korea"
+                    for word in country.split():
+                        if word in problematic:
+                            return word
+                    
+                    return country
 
-                elem['countries'] = [setIsoName(country) for country in elem['countries']]
+                elem['countries'] = [setIsoName(country) for country in elem['countries']]                
 
         # Text fields to one field
         text = ""

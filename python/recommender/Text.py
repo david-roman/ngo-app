@@ -7,6 +7,7 @@ from sklearn.metrics.pairwise import linear_kernel
 
 def getSimilarities(client, keys, text):
 
+    # nltk.download('stopwords') # if necessary...
     # nltk.download('punkt') # if necessary...
 
     # Array to store text similarities
@@ -28,8 +29,8 @@ def getSimilarities(client, keys, text):
             corpus.append(ngoText)
 
     # Stemming + remove punctuation
-    stemmer = nltk.stem.porter.PorterStemmer()
-    remove_punctuation_map = dict((ord(char), None) for char in string.punctuation)
+    stemmer = nltk.stem.snowball.SnowballStemmer('english')
+    remove_punctuation_map = dict((ord(char), None) for char in string.punctuation.replace("'", ""))
 
     def stem_tokens(tokens):
         return [stemmer.stem(item) for item in tokens]
@@ -37,9 +38,11 @@ def getSimilarities(client, keys, text):
     def normalize(text):
         return stem_tokens(nltk.word_tokenize(text.lower().translate(remove_punctuation_map)))
 
+    stopwords = stem_tokens(nltk.corpus.stopwords.words('english'))
+
     # Count vectorizer applies preprocessing & creates 1 vector per doc in corpus with length the number of diff words 
     # with each position containing 0 or 1 depending on whether that doc contains the word
-    vectorizer = CountVectorizer(tokenizer=normalize, stop_words='english')
+    vectorizer = CountVectorizer(tokenizer=normalize, stop_words=stopwords)
 
     # Train vectorizer and get the count vector of all docs in db
     corpusVectArr = vectorizer.fit_transform(corpus)
@@ -48,7 +51,7 @@ def getSimilarities(client, keys, text):
 
     # -- On selection
 
-    vectorizer2 = CountVectorizer(tokenizer=normalize, stop_words='english', vocabulary=vocab)
+    vectorizer2 = CountVectorizer(tokenizer=normalize, stop_words=stopwords, vocabulary=vocab)
     
     # Get the count vector of the req. text from the trained vectorizer
     docVectArr = vectorizer2.transform([text])

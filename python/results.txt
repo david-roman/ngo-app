@@ -1,0 +1,231 @@
+{
+    "ngoNum": 10, 
+    "hq": ["France", "Spain"], 
+    "scope": ["International"], 
+    "established": [1950, 2000], 
+    "members": [10, 100], 
+    "funding": ["Membership fees or dues", "Funds from Religious Institutions", "Fundraising campaigns"], 
+    "languages": ["Spanish", "French", "Afrikaans", "Swahili"], 
+    "description": "Sustainable development of economy in Africa to enforce women and children rights", 
+    "continents": ["Africa"], 
+    "countries": ["Kenya", "Tanzania", "Ivory Coast"],
+    "activities": {
+        "Economic and Social": ["Business and Industry", "Culture", "Development"],
+        "Gender Issues and Advancement of Women": ["Advocacy and outreach", "Capacity building"]
+    }
+}
+
+- First try:
+    Start: 1641923057.62964
+    Before categorical: 1641923057.6335194
+    After categorical: 1641923132.8188915
+    Before textual: 1641923132.819299
+    After textual: 1641923134.0019484
+    End: 1641923134.0152714
+
+    Categorical: ~75s
+    Textual: less than 2s
+    Total: ~77s
+
+- Second try, check times during categorical calc:
+
+Start: 1.430511474609375e-06
+Iter: 4.601478576660156e-05
+After numeric: 0.0003483295440673828
+Before cat: 0.00037384033203125
+Field start: hq 0.0003800392150878906
+Start cat: 0.000385284423828125
+End cat: 0.007716655731201172
+Field end: hq 0.008253335952758789
+Field start: scope 0.008278131484985352
+Start cat: 0.008286476135253906
+End cat: 0.012976884841918945
+Field end: scope 0.013457059860229492
+Field start: languages 0.013487100601196289
+Start cat: 0.01349639892578125
+End cat: 0.02123713493347168
+Field end: languages 0.021749496459960938
+Field start: activities 0.02178645133972168
+Start cat: 0.021794557571411133
+End cat: 0.0560758113861084
+Field end: activities 0.05670046806335449
+After cat: 0.05673027038574219
+Iter: 0.05674147605895996
+After numeric: 0.05759263038635254
+Before cat: 0.05770421028137207
+Field start: hq 0.057715654373168945
+Start cat: 0.05772209167480469
+End cat: 0.06530237197875977
+Field end: hq 0.0658864974975586
+Field start: scope 0.06592178344726562
+Start cat: 0.06593155860900879
+End cat: 0.07087826728820801
+Field end: scope 0.07125067710876465
+Field start: languages 0.07127904891967773
+Start cat: 0.07128620147705078
+End cat: 0.07817530632019043
+Field end: languages 0.07867980003356934
+Field start: activities 0.07872772216796875
+Start cat: 0.0787351131439209
+End cat: 0.11469721794128418
+Field end: activities 0.1152350902557373
+After cat: 0.11526823043823242
+Iter: 0.11528182029724121
+After numeric: 0.11651110649108887
+Before cat: 0.11657404899597168
+Field start: hq 0.11658215522766113
+Start cat: 0.11658906936645508
+End cat: 0.12342429161071777
+Field end: hq 0.12384581565856934
+Field start: scope 0.12386703491210938
+Start cat: 0.12387371063232422
+End cat: 0.12806415557861328
+Field end: scope 0.12842583656311035
+Field start: funding 0.1284499168395996
+Start cat: 0.12845635414123535
+End cat: 0.13739871978759766
+Field end: funding 0.1379714012145996
+Field start: languages 0.13800597190856934
+Start cat: 0.138014554977417
+End cat: 0.14946317672729492
+Field end: languages 0.14998936653137207
+Field start: activities 0.15004634857177734
+Start cat: 0.15005707740783691
+End cat: 0.23376941680908203
+Field end: activities 0.23429560661315918
+After cat: 0.23431801795959473
+Iter: 0.23432707786560059
+After numeric: 0.23487353324890137
+Before cat: 0.23491525650024414
+Field start: hq 0.23492217063903809
+Start cat: 0.23492693901062012
+End cat: 0.24325942993164062
+Field end: hq 0.24434590339660645
+Field start: scope 0.24437832832336426
+Start cat: 0.24438691139221191
+End cat: 0.25007128715515137
+Field end: scope 0.250624418258667
+Field start: languages 0.2506563663482666
+Start cat: 0.25066637992858887
+End cat: 0.25882387161254883
+Field end: languages 0.2593228816986084
+Field start: activities 0.2593519687652588
+Start cat: 0.25935888290405273
+End cat: 0.2809939384460449
+Field end: activities 0.281768798828125
+After cat: 0.28180503845214844
+
+In first 4 iterations we can see, numeric similarity calculations are very fast.
+Categorical similarity calculations, are slow, iterations 1, 2 and 4 ~0.6s, iter 3, 1.2s
+Unacceptable, as 0.6*1555 = 933 -> 933/60 -> 15.55min, although that is not true as we have seen execution time is ~75s. 
+
+- Third try, checking time of each step in categorical similarity calc
+Iter: 1.1205673217773438e-05
+Field:  hq 0.00040221214294433594
+Start cat: 0.0004227161407470703
+Dfs created: 0.0013682842254638672
+Dummies created: 0.006226301193237305
+Dummies filled: 0.007570028305053711
+End cat: 0.009199142456054688
+Field:  scope 0.009786844253540039
+Start cat: 0.009815692901611328
+Dfs created: 0.01050877571105957
+Dummies created: 0.016211509704589844
+Dummies filled: 0.017771244049072266
+End cat: 0.018968820571899414
+Field:  languages 0.019697189331054688
+Start cat: 0.01972508430480957
+Dfs created: 0.020413637161254883
+Dummies created: 0.026885986328125
+Dummies filled: 0.02828669548034668
+End cat: 0.029896974563598633
+Field:  activities 0.030507564544677734
+Start cat: 0.0305330753326416
+Dfs created: 0.03249549865722656
+Dummies created: 0.059378862380981445
+Dummies filled: 0.07223963737487793
+End cat: 0.07427144050598145
+Iter: 0.0747992992401123
+Field:  hq 0.07541847229003906
+Start cat: 0.07544326782226562
+Dfs created: 0.07603979110717773
+Dummies created: 0.07976174354553223
+Dummies filled: 0.08064770698547363
+End cat: 0.08174920082092285
+Field:  scope 0.08228397369384766
+Start cat: 0.08230900764465332
+Dfs created: 0.08284115791320801
+Dummies created: 0.08699822425842285
+Dummies filled: 0.087066650390625
+End cat: 0.08771824836730957
+Field:  languages 0.08840632438659668
+Start cat: 0.08845114707946777
+Dfs created: 0.08966612815856934
+Dummies created: 0.09729146957397461
+Dummies filled: 0.09882950782775879
+End cat: 0.10033440589904785
+Field:  activities 0.1009666919708252
+Start cat: 0.10100340843200684
+Dfs created: 0.10299205780029297
+Dummies created: 0.13335657119750977
+Dummies filled: 0.14221644401550293
+End cat: 0.14627480506896973
+Iter: 0.14744210243225098
+Field:  hq 0.14869284629821777
+Start cat: 0.1487429141998291
+Dfs created: 0.14972901344299316
+Dummies created: 0.1554577350616455
+Dummies filled: 0.15602374076843262
+End cat: 0.15698480606079102
+Field:  scope 0.15753841400146484
+Start cat: 0.15757083892822266
+Dfs created: 0.15830707550048828
+Dummies created: 0.16341423988342285
+Dummies filled: 0.16348552703857422
+End cat: 0.16413664817810059
+Field:  funding 0.16470932960510254
+Start cat: 0.16473841667175293
+Dfs created: 0.16574835777282715
+Dummies created: 0.17386770248413086
+Dummies filled: 0.17534971237182617
+End cat: 0.17687034606933594
+Field:  languages 0.17743778228759766
+Start cat: 0.17746257781982422
+Dfs created: 0.17828822135925293
+Dummies created: 0.18802571296691895
+Dummies filled: 0.19080662727355957
+End cat: 0.19199776649475098
+Field:  activities 0.19257497787475586
+Start cat: 0.19260215759277344
+Dfs created: 0.19670939445495605
+Dummies created: 0.2705221176147461
+Dummies filled: 0.3016996383666992
+End cat: 0.30490875244140625
+Iter: 0.3055732250213623
+Field:  hq 0.30616068840026855
+Start cat: 0.3061850070953369
+Dfs created: 0.3069188594818115
+Dummies created: 0.31171321868896484
+Dummies filled: 0.31314706802368164
+End cat: 0.31438636779785156
+Field:  scope 0.31504249572753906
+Start cat: 0.31506967544555664
+Dfs created: 0.31591176986694336
+Dummies created: 0.3205552101135254
+Dummies filled: 0.3214256763458252
+End cat: 0.32238054275512695
+Field:  languages 0.3230750560760498
+Start cat: 0.323101282119751
+Dfs created: 0.32399702072143555
+Dummies created: 0.3307645320892334
+Dummies filled: 0.3325517177581787
+End cat: 0.33408355712890625
+Field:  activities 0.3346848487854004
+Start cat: 0.33471035957336426
+Dfs created: 0.3360447883605957
+Dummies created: 0.3489217758178711
+Dummies filled: 0.35250258445739746
+End cat: 0.3543741703033447
+
+Dataframe creation, get_dummies and fill columns very innefficient, custom implementation used instead,
+time: End: 3.251250982284546

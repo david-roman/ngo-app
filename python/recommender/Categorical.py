@@ -4,6 +4,7 @@ from sklearn.metrics.pairwise import cosine_similarity
 import math
 import numpy as np
 import pycountry_convert as pc
+import time
 
 def getSimilarities(client, keys, reqs):
     
@@ -15,7 +16,6 @@ def getSimilarities(client, keys, reqs):
     def numericSimilarity(reqRange, ngoValue, range, higher=True):
         if ngoValue < range[0] or ngoValue > range[1]:
             return 0
-        print(reqRange, ngoValue)
 
         # If the value is in the range, similarity is 1
         if ngoValue >= reqRange[0] and ngoValue <= reqRange[1]:
@@ -45,34 +45,21 @@ def getSimilarities(client, keys, reqs):
             reqValue = np.roots([1,-2*phi, (normReqValue-phi)**2+phi**2-3])
             ngoValue = np.roots([1,-2*phi, (normNgoValue-phi)**2+phi**2-3])
 
-        print(reqValue, ngoValue)
         return abs(min(abs(reqValue))-min(abs(ngoValue)))
         
     # Generate matrix where for every ngo, there is an array with a position for each possible value 
     # of the categorical data, where there will be a 1 in the values that the ngo has, or a 0 otherwise
     def categoricalSimilarity(data, reqs):
+
+        # print("Start cat:", time.time() - start)
         # Get all different values from both lists
         colNames = data + list(set(reqs)-set(data))
+
+        dataDummiesDF = [1 if elem in data else 0 for elem in colNames]
+        reqsDummiesDF = [1 if elem in reqs else 0 for elem in colNames]
         
-        dataDF = pd.DataFrame([data])
-        reqsDF = pd.DataFrame([reqs])
-
-        dataDummiesDF = pd.get_dummies(dataDF, prefix='', prefix_sep='')
-        
-        reqsDummiesDF = pd.get_dummies(reqsDF, prefix='', prefix_sep='')
-
-        # Fill both Dataframes with all the columns that the other DF has
-        for name in colNames:
-            if name not in dataDummiesDF:
-                dataDummiesDF[name] = 0
-            if name not in reqsDummiesDF:
-                reqsDummiesDF[name] = 0
-
-        dataDummiesDF = dataDummiesDF.reindex(sorted(dataDummiesDF.columns), axis=1)
-        reqsDummiesDF = reqsDummiesDF.reindex(sorted(reqsDummiesDF.columns), axis=1)
-
         # Calculate cosine similarity
-        return cosine_similarity(reqsDummiesDF.to_numpy(), dataDummiesDF.to_numpy()).flatten()
+        return cosine_similarity([reqsDummiesDF], [dataDummiesDF]).flatten()
 
     similarities = []
     reqMembers = reqs['members']
@@ -85,6 +72,7 @@ def getSimilarities(client, keys, reqs):
     reqs['activities'] = list(dict.fromkeys(activities))
 
     for k in keys:
+        # print("Iter:", time.time() - start)
 
         # Numeric values
         rangeSimilarity = 0
@@ -97,6 +85,7 @@ def getSimilarities(client, keys, reqs):
         if reqEstablished is not None and 'established' in ngo and ngo['established'] is not None and isinstance(ngo['established'], int):
             rangeSimilarity += numericSimilarity(reqEstablished, ngo['established'], establishedRange)
 
+
         # Categorical values
         fields = ['hq', 'scope', 'funding', 'languages', 'continents', 'countries', 'activities']
 
@@ -108,8 +97,6 @@ def getSimilarities(client, keys, reqs):
             activities = activities + ngo['activities'][area]
         # Remove duplicates
         ngo['activities'] = list(dict.fromkeys(activities))
-
-
 
         # Get ngo continents
         continents = {
@@ -130,7 +117,7 @@ def getSimilarities(client, keys, reqs):
             ngo['continents'] = list(continentSet)
         else:
             ngo['continents'] = []
-
+            
         # Categorical calc
         for field in fields:
             if (field in ngo and ngo[field] is not None and field in reqs and reqs[field] is not None):
@@ -140,12 +127,13 @@ def getSimilarities(client, keys, reqs):
                     ngo[field] = [i for i in ngo[field] if i]
                     ngo[field] = list(dict.fromkeys(ngo[field]))
                 if len(ngo[field]) > 0 and len(reqs[field]) > 0:
+                    # print("Field: ", field, time.time()-start)
                     ngoSimilarities.append(categoricalSimilarity([ngo[field]] if isinstance(ngo[field], str) else ngo[field], reqs[field])[0])
                 else:
                     ngoSimilarities.append(0)
             else: 
                 ngoSimilarities.append(0)
-
+        
         # Compute similarity
         similarities.append(sum(ngoSimilarities)*(7/9)/len(ngoSimilarities) + rangeSimilarity*(2/9))
 
