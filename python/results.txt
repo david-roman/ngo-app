@@ -228,4 +228,13 @@ Dummies filled: 0.35250258445739746
 End cat: 0.3543741703033447
 
 Dataframe creation, get_dummies and fill columns very innefficient, custom implementation used instead,
-time: End: 3.251250982284546
+End: 5.22900652885437
+
+For categorical -> Tried df.get_dummies and sklearn OneHotEncoder LabelEncoder
+
+TODO:
+Order
+1. For all possible values of categorical fields, calculate which are more important, that is, which are less frequent. -> Done
+2. Select most important features, the ones whose similarities have more std deviation: -> Done
+3. Justify results -> Normalize -> Add mean similarity to make all similarities equivalent, calcular desviacio de la mitjana?
+-> (CurrentSim - MeanOfSim)/(maxVal - minVal) but removing outliers before calculating it -> Done

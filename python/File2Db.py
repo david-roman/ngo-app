@@ -1,10 +1,9 @@
 import json
-from os import replace
 from redis import Redis
-from redisearch import Client as SClient
-from redisearch.client import TextField
-from rejson import Client as JClient, Path
+from rejson import Client, Path
 import re
+import pycountry_convert as pc
+import Preprocess
 
 # Return true only if item has necessary info
 def has_info(item):
@@ -19,9 +18,9 @@ def has_info(item):
 def load_redisjson(json_arr):
 
     r = Redis(port=6381)
-    r.flushall()
+    # r.flushall()
 
-    client = JClient(port=6381)
+    client = Client(port=6381, decode_responses=True)
 
     for elem in json_arr:
 
@@ -46,9 +45,8 @@ def load_redisjson(json_arr):
             elem.pop('established', None)
         elif elem['established'] and elem['established'].isnumeric():
             elem['established'] = int(elem['established'])
-
-        # Countries
-        # TODO: Most countries inserted as None
+        else:
+            elem.pop('established', None)
 
         if elem['countries'] is not None and len(elem['countries']) > 0:
             if elem['countries'][0].lower() == 'none':
@@ -100,6 +98,35 @@ def load_redisjson(json_arr):
         #Delete old text fields
         elem.pop('statement', None)
         elem.pop('remarks', None)
+
+        # activities
+        activities = []
+        for area in elem['activities']:
+            activities = activities + elem['activities'][area]
+        # Remove duplicates
+        elem['activities'] = list(dict.fromkeys(activities))
+
+        # Set continents
+                # Get ngo continents
+        continents = {
+            'NA': 'North America',
+            'SA': 'South America', 
+            'AS': 'Asia',
+            'OC': 'Australia',
+            'AF': 'Africa',
+            'EU': 'Europe'
+        }
+
+        if elem['countries'] is not None:
+            continentSet = set()
+            for country in elem['countries']:
+                if country is not None:
+                    continentSet.add(continents[pc.country_alpha2_to_continent_code(pc.country_name_to_country_alpha2(country))])
+
+            elem['continents'] = list(continentSet)
+        else:
+            elem['continents'] = []
+
     
         # JSON.SET name . 'elem'
         client.jsonset(elem['title'], Path.rootPath(), elem)
@@ -117,6 +144,20 @@ def main():
     print(len(json_arr))
 
     load_redisjson(json_arr)
+
+    print('Insertion completed')
+
+    # Preprocess.numeric_preprocess()
+    # print('Numeric preprocess completed')
+
+    Preprocess.text_preprocess()
+    print('Text completed')
+    
+    Preprocess.most_important_values()
+    print('Most important values calculated')
+    
+    Preprocess.most_significant_vars()
+    print('Most significant variables calculated')
 
 if __name__ == "__main__":
     main()

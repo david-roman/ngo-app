@@ -13,12 +13,15 @@ app.post('/recommended', (request, response) => {
     const python = spawn('python', ['./python/recommender/Recommender.py', JSON.stringify(requirements)]);
     python.stdout.on('data', (data) => {
         returnVal.push(JSON.parse(data.toString()
+            .replace(/\\/, '\\\\')
+            .replace(/\['/g, '["')
             .replace(/{'/g, '{"')
             .replace(/':/g, '":')
             .replace(/: '/g, ': "')
             .replace(/, '/g, ', "')
             .replace(/', /g, '", ')
             .replace(/'}/g, '"}')
+            .replace(/']/g, '"]')
             .replace(/None/g, 'null')
             .trim()));
     });

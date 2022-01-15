@@ -2,12 +2,13 @@ import json
 
 # Returns general and its specific activity areas from NGOs json.
 
-file = open("esango.json")
+file = open("./python/esango.json")
 
 dicts = json.loads(file.read())
 
 areas = set([])
 
+# Get general areas
 for elem in dicts:
     act = elem.get("activities")
     for a in act:
@@ -15,11 +16,13 @@ for elem in dicts:
 
 specific = []
 
+# array of sets, one per general area
 for ar in areas:
     specific.append(set([]))
 
 array = list(areas)
 
+# 
 for elem in dicts:
     act = elem.get("activities")
     for a in act:
@@ -27,4 +30,4 @@ for elem in dicts:
             index = array.index(a)
             specific[index].add(val)
 
-print(array, specific)
+print(array, [list(x) for x in specific])

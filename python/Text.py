@@ -5,28 +5,13 @@ import numpy as np
 from sklearn.metrics.pairwise import linear_kernel
 
 
-def getSimilarities(client, keys, text):
+def getSimilarities(client, text):
 
     # nltk.download('stopwords') # if necessary...
     # nltk.download('punkt') # if necessary...
 
     # Array to store text similarities
     similarities = []
-
-    # -- On insertion
-
-    # Get all texts from redis
-    corpus = []
-
-    for k in keys:
-
-        ngoText = client.jsonget(k, Path('.text'))
-
-        if ngoText is None: 
-            corpus.append("")
-
-        else:
-            corpus.append(ngoText)
 
     # Stemming + remove punctuation
     stemmer = nltk.stem.snowball.SnowballStemmer('english')
@@ -38,20 +23,9 @@ def getSimilarities(client, keys, text):
     def normalize(text):
         return stem_tokens(nltk.word_tokenize(text.lower().translate(remove_punctuation_map)))
 
-    stopwords = stem_tokens(nltk.corpus.stopwords.words('english'))
+    text_pre = client.jsonget('text_pre', '.')
 
-    # Count vectorizer applies preprocessing & creates 1 vector per doc in corpus with length the number of diff words 
-    # with each position containing 0 or 1 depending on whether that doc contains the word
-    vectorizer = CountVectorizer(tokenizer=normalize, stop_words=stopwords)
-
-    # Train vectorizer and get the count vector of all docs in db
-    corpusVectArr = vectorizer.fit_transform(corpus)
-
-    vocab = vectorizer.vocabulary_
-
-    # -- On selection
-
-    vectorizer2 = CountVectorizer(tokenizer=normalize, stop_words=stopwords, vocabulary=vocab)
+    vectorizer2 = CountVectorizer(tokenizer=normalize, stop_words=text_pre['stopwords'], vocabulary=text_pre['vocabulary'])
     
     # Get the count vector of the req. text from the trained vectorizer
     docVectArr = vectorizer2.transform([text])
@@ -60,7 +34,7 @@ def getSimilarities(client, keys, text):
     transformer = TfidfTransformer()
 
     # Train the transformer and get the tf-idf matrix
-    corpusTfidf = transformer.fit_transform(corpusVectArr)
+    corpusTfidf = transformer.fit_transform(text_pre['countvector'])
 
     # Get the req. text tf-idf array from the trained transformer
     docTfidf = transformer.transform(docVectArr)

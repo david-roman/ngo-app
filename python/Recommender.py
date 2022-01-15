@@ -10,30 +10,24 @@ import time
 # calculate all with all similarities and get which calculation delivers lower overall similarity values,
 # those calculations will be the most valuable; desviacion típica maybe?
 
+requirements = json.loads(sys.argv[1])
 
-# requirements = json.loads(sys.argv[1])
-start = time.time()
-
-with open("python/recommender/sampleInput.json") as json_file:
-
-    requirements = json.load(json_file)
+# with open("python/recommender/sampleInput.json") as json_file:
+    # requirements = json.load(json_file)
 
 client = Client(port=6381, decode_responses=True)
 keys = client.keys()
-
-print("Before categorical:", time.time()-start)
+keys.remove('stats')
+keys.remove('weights')
+keys.remove('text_pre')
 
 catSimilarities = Categorical.getSimilarities(client, keys, requirements)
+catSimilValues = [cs['simil'] for cs in catSimilarities]
+catSimilFields = [cs['max'] for cs in catSimilarities]
 
-print("After categorical:", time.time()-start)
+catMostSimilar = np.argpartition(catSimilValues, -100)[-100:]
 
-catMostSimilar = np.argpartition(catSimilarities, -100)[-100:]
-
-print("Before textual:", time.time()-start)
-
-textSimilarities = Text.getSimilarities(client, keys, requirements['description'])
-
-print("After textual:", time.time()-start)
+textSimilarities = Text.getSimilarities(client, requirements['description'])
 
 textMostSimilar = np.argpartition(textSimilarities, -100)[-100:]
 
@@ -43,18 +37,27 @@ def joinSimilarities():
     # Most similar ngos for both methods
     mostSimilar = list(set(catMostSimilar).union(set(textMostSimilar)))
     # Total similarity of the most similar ngo
-    highestSim = [catSimilarities[i]+textSimilarities[i] for i in mostSimilar]
+    highestSim = [catSimilValues[i]+textSimilarities[i] for i in mostSimilar]
     # Indexes of top ngoNum ngos
     topSimilar = np.argpartition(highestSim, -requirements['ngoNum'])[-requirements['ngoNum']:]
 
     return [mostSimilar[top] for top in np.sort(topSimilar)]
 
 similarKeys = []
+justification = []
 for ms in joinSimilarities():
     similarKeys.append(keys[ms])
 
+    justify = []
+    if ms in textMostSimilar:
+        justify.append('Description')
+    if ms in catMostSimilar:
+        justify = justify + catSimilFields[ms]
+    justification.append(justify)
+
 result = [{f: client.jsonget(k, '.' + f) for f in fields} for k in similarKeys]
 
-print("End:", time.time()-start)
+for i in range(0, len(similarKeys)):
+    result[i]['justification'] = justification[i]
 
 print(result)
