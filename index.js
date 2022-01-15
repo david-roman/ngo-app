@@ -10,7 +10,7 @@ app.use(express.json());
 app.post('/recommended', (request, response) => {
     const requirements = request.body;
     const returnVal = [];
-    const python = spawn('python', ['./python/recommender/Recommender.py', JSON.stringify(requirements)]);
+    const python = spawn('python', ['./python/Recommender.py', JSON.stringify(requirements)]);
     python.stdout.on('data', (data) => {
         returnVal.push(JSON.parse(data.toString()
             .replace(/\\/, '\\\\')

@@ -238,3 +238,8 @@ Order
 2. Select most important features, the ones whose similarities have more std deviation: -> Done
 3. Justify results -> Normalize -> Add mean similarity to make all similarities equivalent, calcular desviacio de la mitjana?
 -> (CurrentSim - MeanOfSim)/(maxVal - minVal) but removing outliers before calculating it -> Done
+
+4. Fix numeric similarity
+5. Fix categorical
+6. Fix textual
+7. Add textual to simil_calc

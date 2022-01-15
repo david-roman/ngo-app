@@ -5,11 +5,12 @@ from sklearn.metrics.pairwise import cosine_similarity
 import math
 import numpy as np
 import time
+import Text
 
 def getSimilarities(client, keys, reqs, forInsert=False):
     
-    memberRange = [1, 10000]
-    establishedRange = [1625, 2022]
+    memberRange = [1, 1090000]
+    establishedRange = [1149, 2020]
     fieldLabels = ['Headquarters Country', 'Scope', 'Funding methods', 'Languages', 'Continents', 'Countries', 'Activities', 'Members', 'Year established']
     allFields = ['members','established', 'hq', 'scope', 'funding', 'languages', 'continents', 'countries', 'activities']
     catFields = ['hq', 'scope', 'funding', 'languages', 'continents', 'countries', 'activities']
@@ -53,7 +54,7 @@ def getSimilarities(client, keys, reqs, forInsert=False):
             reqValue = np.roots([1,-2*phi, (normReqValue-phi)**2+phi**2-3])
             ngoValue = np.roots([1,-2*phi, (normNgoValue-phi)**2+phi**2-3])
 
-        return abs(min(abs(reqValue))-min(abs(ngoValue)))
+        return 1 - abs(min(abs(reqValue))-min(abs(ngoValue)))
         
     # Generate matrix where for every ngo, there is an array with a position for each possible value 
     # of the categorical data, where there will be a 1 in the values that the ngo has, or a 0 otherwise
@@ -61,14 +62,14 @@ def getSimilarities(client, keys, reqs, forInsert=False):
     def categoricalSimilarity(data, reqs, field):
 
         # Get all different values from both lists
-        colNames = data + list(set(reqs)-set(data))
+        # colNames = data + list(set(reqs)-set(data)) not used anymore as 
 
 
         # dataDummiesDF = [1 if elem in data else 0 for elem in colNames]
         # reqsDummiesDF = [1 if elem in reqs else 0 for elem in colNames]
 
-        dataDummiesDF = [weights[field][elem] if elem in data and elem in weights[field] else 0 for elem in colNames]
-        reqsDummiesDF = [weights[field][elem] if elem in reqs and elem in weights[field] else 0 for elem in colNames]
+        dataDummiesDF = [weights[field][elem] if elem in data and elem in weights[field] else 0 for elem in reqs]
+        reqsDummiesDF = [weights[field][elem] if elem in reqs and elem in weights[field] else 0 for elem in reqs]
         
         # Calculate cosine similarity
         return cosine_similarity([reqsDummiesDF], [dataDummiesDF]).flatten()[0]
@@ -77,7 +78,7 @@ def getSimilarities(client, keys, reqs, forInsert=False):
         maxFields = []
         normSimil = []
         for i in range(0, len(allSimil)):
-            normSimil.append((allSimil[i] - stats[allFields[i]]['mean']) / (stats[allFields[i]['max']] - stats[allFields[i]['max']]))
+            normSimil.append((allSimil[i] - stats[allFields[i]]['mean']) / (stats[allFields[i]]['max'] - stats[allFields[i]]['min']))
         
         for i in np.argpartition(normSimil, -3)[-3:]:
             maxFields.append(fieldLabels[i])
@@ -142,17 +143,3 @@ def getSimilarities(client, keys, reqs, forInsert=False):
             })
         
     return similarities
-
-def getAllSimilarities(client, keys):
-
-    similarities = []
-
-    counter = 0
-    print(time.time())
-    for k in keys:
-        print(counter, k)
-        similarities.append(getSimilarities(client, keys, client.jsonget(k, '.'), forInsert=True))
-        print(time.time())
-        counter+=1
-    return similarities
-

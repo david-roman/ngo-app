@@ -104,7 +104,7 @@ def load_redisjson(json_arr):
         for area in elem['activities']:
             activities = activities + elem['activities'][area]
         # Remove duplicates
-        elem['activities'] = list(dict.fromkeys(activities))
+        elem['activities'] = list(set(activities))
 
         # Set continents
                 # Get ngo continents
@@ -156,8 +156,8 @@ def main():
     Preprocess.most_important_values()
     print('Most important values calculated')
     
-    Preprocess.most_significant_vars()
-    print('Most significant variables calculated')
+    # Preprocess.most_significant_vars()
+    # print('Most significant variables calculated')
 
 if __name__ == "__main__":
     main()

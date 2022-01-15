@@ -12,9 +12,10 @@ def most_significant_vars():
     fields = ['members', 'established', 'hq', 'scope', 'funding', 'languages', 'continents', 'countries', 'activities']
     client = Client(port=6381, decode_responses=True)
     keys = client.keys()
+    keys.remove("stats")
     keys.remove("text_pre")
     keys.remove("weights")
-    similarities = Categorical.getAllSimilarities(client, keys)
+    similarities = getAllSimilarities(client, keys)
     means = {}
     stdev_total = 0
 
@@ -41,11 +42,26 @@ def most_significant_vars():
     
     client.jsonset("stats", '.', means)
 
+def getAllSimilarities(client, keys):
+
+    similarities = []
+
+    counter = 0
+    print(time.time())
+    for k in keys:
+        print(counter, k)
+        similarities.append(Categorical.getSimilarities(client, keys, client.jsonget(k, '.'), forInsert=True))
+        print(time.time())
+        counter+=1
+    return similarities
+
 def most_important_values():
     catFields = ['hq', 'scope', 'funding', 'languages', 'continents', 'countries', 'activities']
     fieldsValues = {}
     client = Client(port=6381, decode_responses=True)
     keys = client.keys()
+    keys.remove("weights")
+    keys.remove("stats")
     keys.remove("text_pre")
     for f in catFields:
         fieldVal = {}
@@ -87,6 +103,9 @@ def text_preprocess():
 
     client = Client(port=6381, decode_responses=True)
     keys = client.keys()
+    keys.remove("weights")
+    keys.remove("stats")
+    keys.remove("text_pre")
 
     for k in keys:
 
@@ -127,7 +146,7 @@ def text_preprocess():
 # def numeric_preprocess():
 
 #     memberRange = [1, 10000]
-#     establishedRange = [1625, 2022]
+#     establishedRange = [1149, 2020]
 
 #     client = Client(port=6381, decode_responses=True)
 #     keys = client.keys()

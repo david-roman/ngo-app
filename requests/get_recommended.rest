@@ -11,9 +11,6 @@ Content-Type: application/json
     "languages": ["Spanish", "French", "Afrikaans", "Swahili"], 
     "description": "Sustainable development of economy in Africa to enforce women and children rights", 
     "continents": ["Africa"], 
-
-    "activities": {
-        "Economic and Social": ["Business and Industry", "Culture", "Development"],
-        "Gender Issues and Advancement of Women": ["Advocacy and outreach", "Capacity building"]
-    }
+    "countries": ["Kenya", "Tanzania", "Ivory Coast"],
+    "activities": ["Business and Industry", "Culture", "Development", "Advocacy and outreach", "Capacity building"]
 }

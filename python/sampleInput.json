@@ -1,5 +1,5 @@
 {
-    "ngoNum": 10, 
+    "ngoNum": 5, 
     "hq": ["France", "Spain"], 
     "scope": ["International"], 
     "established": [1950, 2000], 
@@ -9,8 +9,5 @@
     "description": "Sustainable development of economy in Africa to enforce women and children rights", 
     "continents": ["Africa"], 
     "countries": ["Kenya", "Tanzania", "Ivory Coast"],
-    "activities": {
-        "Economic and Social": ["Business and Industry", "Culture", "Development"],
-        "Gender Issues and Advancement of Women": ["Advocacy and outreach", "Capacity building"]
-    }
+    "activities": ["Business and Industry", "Culture", "Development", "Advocacy and outreach", "Capacity building"]
 }

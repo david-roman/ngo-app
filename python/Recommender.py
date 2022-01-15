@@ -12,8 +12,9 @@ import time
 
 requirements = json.loads(sys.argv[1])
 
-# with open("python/recommender/sampleInput.json") as json_file:
-    # requirements = json.load(json_file)
+# with open("python/sampleInput.json") as json_file:
+#     requirements = json.load(json_file)
+
 
 client = Client(port=6381, decode_responses=True)
 keys = client.keys()
