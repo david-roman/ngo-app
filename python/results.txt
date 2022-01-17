@@ -243,3 +243,5 @@ Order
 5. Fix categorical
 6. Fix textual
 7. Add textual to simil_calc
+
+-- From range slider remove outlier values so slider makes some sense

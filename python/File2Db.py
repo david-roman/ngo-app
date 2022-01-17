@@ -24,6 +24,9 @@ def load_redisjson(json_arr):
 
     for elem in json_arr:
 
+        if elem['acronym'] is not None and elem['acronym'] == 'ZAP':
+            elem.pop('acronym', None)
+
         # Estimate members
         if elem['members'] is not None:
 

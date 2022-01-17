@@ -28,7 +28,7 @@ def most_significant_vars():
 
         # all_simil = [j for j in all_simil if j != 0]
         mean = sum(all_simil)/len(all_simil) if len(all_simil) > 0 else 0
-        stdev = np.std(all_simil)/mean if mean > 0 else 0
+        stdev = np.std(all_simil)
         stdev_total += stdev
         filtered = [e for e in all_simil if (mean - 2 * stdev < e < mean + 2 * stdev)]
         if len(filtered) == 0:
