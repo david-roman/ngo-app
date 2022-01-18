@@ -85,12 +85,8 @@ def most_important_values():
                         total += 1
 
         for fv in fieldVal:
-            fieldVal[fv] = fieldVal[fv]/total
+            fieldVal[fv] = total/fieldVal[fv]
         
-        maxf = max(fieldVal.values())
-        for fv in fieldVal:
-            fieldVal[fv] = fieldVal[fv]/maxf
-
         fieldsValues[f] = fieldVal
 
 
