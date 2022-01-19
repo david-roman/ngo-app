@@ -10,7 +10,7 @@ import numpy as np
 
 def most_significant_vars():
     fields = ['members', 'established', 'hq', 'scope', 'funding', 'languages', 'continents', 'countries', 'activities']
-    client = Client(port=6381, decode_responses=True)
+    client = Client(port=6379, decode_responses=True)
     keys = client.keys()
     keys.remove("stats")
     keys.remove("text_pre")
@@ -30,11 +30,8 @@ def most_significant_vars():
         mean = sum(all_simil)/len(all_simil) if len(all_simil) > 0 else 0
         stdev = np.std(all_simil)
         stdev_total += stdev
-        filtered = [e for e in all_simil if (mean - 2 * stdev < e < mean + 2 * stdev)]
-        if len(filtered) == 0:
-            filtered = [0]
 
-        means[fields[i]] = {'mean': mean, 'deviation': stdev, 'max': max(filtered), 'min': min(filtered)}
+        means[fields[i]] = {'mean': mean, 'deviation': stdev}
         print('field:', i, 'calculated', time.time(), means[fields[i]])
 
     for f in fields:
@@ -58,10 +55,10 @@ def getAllSimilarities(client, keys):
 def most_important_values():
     catFields = ['hq', 'scope', 'funding', 'languages', 'continents', 'countries', 'activities']
     fieldsValues = {}
-    client = Client(port=6381, decode_responses=True)
+    client = Client(port=6379, decode_responses=True)
     keys = client.keys()
     keys.remove("weights")
-    keys.remove("stats")
+    # keys.remove("stats")
     keys.remove("text_pre")
     for f in catFields:
         fieldVal = {}
@@ -94,13 +91,16 @@ def most_important_values():
 
 
 def text_preprocess():
+
+    nltk.download('stopwords')
+    nltk.download('punkt')
     # Get all texts from redis
     corpus = []
 
-    client = Client(port=6381, decode_responses=True)
+    client = Client(port=6379, decode_responses=True)
     keys = client.keys()
     keys.remove("weights")
-    keys.remove("stats")
+    # keys.remove("stats")
     keys.remove("text_pre")
 
     for k in keys:

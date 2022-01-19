@@ -11,14 +11,14 @@ def getSimilarities(client, keys, reqs, forInsert=False):
     
     memberRange = [1, 1090000]
     establishedRange = [1149, 2020]
-    fieldLabels = ['Headquarters Country', 'Scope', 'Funding methods', 'Languages', 'Continents', 'Countries', 'Activities', 'Members', 'Year established']
+    fieldLabels = [ 'Members', 'Year established', 'Headquarters Country', 'Scope', 'Funding methods', 'Languages', 'Continents', 'Countries', 'Activities']
     allFields = ['members','established', 'hq', 'scope', 'funding', 'languages', 'continents', 'countries', 'activities']
     catFields = ['hq', 'scope', 'funding', 'languages', 'continents', 'countries', 'activities']
     weights = client.jsonget('weights', '.')
     stats = client.jsonget('stats', '.')
 
     # Calculate the similarity of the ngo value with the range,
-    # giving more weight to higher or lower values depending on the "higher" flag
+    # giving more weizzght to higher or lower values depending on the "higher" flag
     def numericSimilarity(reqRange, ngoValue, range, higher=True):
         if forInsert:
             reqValue = reqRange
@@ -76,12 +76,10 @@ def getSimilarities(client, keys, reqs, forInsert=False):
 
     def getMaxSimil(allSimil):
         maxFields = []
-        normSimil = []
-        for i in range(0, len(allSimil)):
-            normSimil.append((allSimil[i] - stats[allFields[i]]['mean']) / (stats[allFields[i]]['max'] - stats[allFields[i]]['min']))
         
-        for i in np.argpartition(normSimil, -3)[-3:]:
+        for i in np.argpartition(allSimil, -2)[-2:]:
             maxFields.append(fieldLabels[i])
+        maxFields.append('Activities')
 
         return maxFields
 
@@ -134,7 +132,7 @@ def getSimilarities(client, keys, reqs, forInsert=False):
             weightedSimil = []
 
             for i in range(0, len(allSimil)):
-                weightedSimil.append(allSimil[i]*stats[allFields[i]]['factor'])
+                weightedSimil.append(allSimil[i]*stats[allFields[i]]['factor']*(4.5 if allFields[i] == 'activities' else 0.5625))
 
             
             similarities.append({

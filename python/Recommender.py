@@ -16,7 +16,7 @@ requirements = json.loads(sys.argv[1])
 #     requirements = json.load(json_file)
 
 
-client = Client(port=6381, decode_responses=True)
+client = Client(port=6379, decode_responses=True)
 keys = client.keys()
 keys.remove('stats')
 keys.remove('weights')

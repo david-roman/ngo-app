@@ -7,7 +7,7 @@ import Categorical
 
 def most_significant_vars():
     fields = ['members']
-    client = Client(port=6381, decode_responses=True)
+    client = Client(port=6379, decode_responses=True)
     keys = client.keys()
     # keys.remove("text_pre")
     keys.remove("weights")
@@ -119,19 +119,22 @@ def getSimilarities(client, keys, reqs, forInsert=False):
     return similarities
 
 def get_max_members():
-
-    client = Client(port=6381, decode_responses=True)
+    field = 'members'
+    client = Client(port=6379, decode_responses=True)
     keys = client.keys()
-    maxNgo = ""
+    maxNgos = []
+    minNgos = []
     maxVal = 0
     for k in keys:
         val = client.jsonget(k, '.')
-        if 'established' in val and val['established'] is not None and isinstance(val['established'], int):
-            if val['established'] > maxVal:
-                maxVal = val['established']
-                maxNgo = k
+        if field in val and val[field] is not None and isinstance(val[field], int):
+            if val[field] > maxVal:
+                if val[field] > 5000:
+                    maxNgos.append(val[field])
+                elif val[field] < 2:
+                    minNgos.append(val[field])
 
-    print(maxNgo, maxVal)
+    print(maxNgos, minNgos)
 
 get_max_members()
 

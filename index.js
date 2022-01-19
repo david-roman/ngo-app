@@ -30,5 +30,5 @@ app.post('/recommended', (request, response) => {
     });
 });
 
-const PORT = 3002;
+const PORT = 3001;
 app.listen(PORT);

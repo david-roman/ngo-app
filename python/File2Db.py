@@ -9,18 +9,18 @@ import Preprocess
 def has_info(item):
 
     if not item['title'] or (not item['remarks'] and not item['statement']) or not item['activities']:
-        return False;
+        return False
 
     else:
-        return True;
+        return True
 
 #insert json
 def load_redisjson(json_arr):
 
-    r = Redis(port=6381)
+    r = Redis(port=6380)
     # r.flushall()
 
-    client = Client(port=6381, decode_responses=True)
+    client = Client(port=6379, decode_responses=True)
 
     for elem in json_arr:
 
@@ -159,8 +159,8 @@ def main():
     Preprocess.most_important_values()
     print('Most important values calculated')
     
-    # Preprocess.most_significant_vars()
-    # print('Most significant variables calculated')
+    Preprocess.most_significant_vars()
+    print('Most significant variables calculated')
 
 if __name__ == "__main__":
     main()
